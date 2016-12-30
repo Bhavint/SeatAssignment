@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{206C42E0-E640-4626-8038-B466E2259AEC}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{0CC9B856-7784-4E20-916A-56473C88B3F4}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SeatAssignment</RootNamespace>
-    <AssemblyName>SeatAssignment</AssemblyName>
+    <RootNamespace>SeatAssignment.BusinessLogic</RootNamespace>
+    <AssemblyName>SeatAssignment.BusinessLogic</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -33,7 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MoreLinq, Version=2.0.20029.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
+      <HintPath>..\packages\morelinq.2.0.0\lib\net35\MoreLinq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -43,25 +45,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="ConfigurationReader.cs" />
+    <Compile Include="FileInputReader.cs" />
+    <Compile Include="FileOutputWriter.cs" />
+    <Compile Include="InputValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValidationMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ValidationMessages.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SeatAssignment.BusinessLogic\SeatAssignment.BusinessLogic.csproj">
-      <Project>{0CC9B856-7784-4E20-916A-56473C88B3F4}</Project>
-      <Name>SeatAssignment.BusinessLogic</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SeatAssignment.Entities\SeatAssignment.Entities.csproj">
       <Project>{b2223c8a-55e8-4f9f-aa11-2f38c56d43b9}</Project>
       <Name>SeatAssignment.Entities</Name>
     </ProjectReference>
     <ProjectReference Include="..\SeatAssignment.Interfaces\SeatAssignment.Interfaces.csproj">
-      <Project>{810fb7e1-bd0a-41c1-9b82-feda9ff4cf75}</Project>
+      <Project>{810FB7E1-BD0A-41C1-9B82-FEDA9FF4CF75}</Project>
       <Name>SeatAssignment.Interfaces</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ValidationMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ValidationMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -52,7 +52,7 @@ namespace SeatAssignment
                 }
                 else
                     outputFilePath = ConfigurationReader.DefaultOutputFilePath;
-                var outputWriter = container.Resolve<IOutputWriter>(new ResolverOverride[] { new ParameterOverride("filePath", inputFilePath) });
+                var outputWriter = container.Resolve<IOutputWriter>(new ResolverOverride[] { new ParameterOverride("filePath", outputFilePath) });
 
                 outputWriter.GenerateOutput(assignments);
             }

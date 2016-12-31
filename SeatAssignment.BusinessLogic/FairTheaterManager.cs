@@ -22,7 +22,7 @@ namespace SeatAssignment.BusinessLogic
                 var rowIndex = _seats.IndexOf(emptyRow);
                 results.Add(AssignSeats(rowIndex, request));
             }
-            return results;
+            return results.OrderBy(result=>result.RequestId).ToList();
         }
 
         private List<bool> GetEmptyRow(int requestedNumberOfSeats)

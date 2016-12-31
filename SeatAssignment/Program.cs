@@ -1,7 +1,9 @@
-﻿using SeatAssignment.BusinessLogic;
+﻿using Microsoft.Practices.Unity;
+using Microsoft.Practices.Unity.Configuration;
+using SeatAssignment.BusinessLogic;
 using SeatAssignment.Entities;
+using SeatAssignment.Interfaces;
 using System;
-using System.Collections.Generic;
 
 namespace SeatAssignment
 {
@@ -16,14 +18,16 @@ namespace SeatAssignment
                  * 2. Assign Seats
                  * 3. Return Results
                 */
+                var container = new UnityContainer().LoadConfiguration();
+
                 string inputFilePath;
-                if (!string.IsNullOrEmpty(args[1]))
+                if (args.Length >= 2 && !string.IsNullOrEmpty(args[1]))
                 {
                     inputFilePath = args[1];
                 }
                 else
                     inputFilePath = ConfigurationReader.DefaultInputFilePath;
-                var inputReader = new FileInputReader(inputFilePath);
+                var inputReader = container.Resolve<IInputReader>(new ResolverOverride[] { new ParameterOverride("filePath", inputFilePath) });
 
                 var reservationRequests = inputReader.GetTicketRequests();
 
@@ -39,19 +43,18 @@ namespace SeatAssignment
                     return;
                 }
 
-
-                var assignments = new List<ReservationAssignment>();
+                var theaterManager = container.Resolve<ITheaterManager>();
+                var assignments = theaterManager.AssignSeats(reservationRequests);
                 string outputFilePath;
-                if (!string.IsNullOrEmpty(args[2]))
+                if (args.Length >= 3 && !string.IsNullOrEmpty(args[2]))
                 {
                     outputFilePath = args[2];
                 }
                 else
                     outputFilePath = ConfigurationReader.DefaultOutputFilePath;
-                var outputWriter = new FileOutputWriter(outputFilePath);
+                var outputWriter = container.Resolve<IOutputWriter>(new ResolverOverride[] { new ParameterOverride("filePath", inputFilePath) });
 
                 outputWriter.GenerateOutput(assignments);
-
             }
             catch (Exception ex)
             {

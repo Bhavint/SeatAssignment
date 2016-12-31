@@ -26,7 +26,7 @@ namespace SeatAssignment.BusinessLogic
                 {
                     fileStringBuilder.AppendLine(string.Format("{0} {1}", assignment.RequestId, string.Join(",", assignment.AssignedSeats.ToArray())));
                 }
-                using (var writer = new StreamWriter(FilePath, true))
+                using (var writer = new StreamWriter(FilePath,false))
                 {
                     writer.WriteLine(fileStringBuilder.ToString());
                 }

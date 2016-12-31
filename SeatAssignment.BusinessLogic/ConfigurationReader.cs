@@ -28,7 +28,7 @@ namespace SeatAssignment.Entities
         {
             get
             {
-                if (_numberOfRows != 0)
+                if (_seatsInEachRow != 0)
                     return _seatsInEachRow;
                 else
                 {

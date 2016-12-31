@@ -49,7 +49,11 @@
     <Compile Include="FileInputReader.cs" />
     <Compile Include="FileOutputWriter.cs" />
     <Compile Include="InputValidator.cs" />
+    <Compile Include="LargeGroupFavoringTheaterManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleTheaterManager.cs" />
+    <Compile Include="FairTheaterManager.cs" />
+    <Compile Include="SmallGroupFavoringTheaterManager.cs" />
     <Compile Include="ValidationMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

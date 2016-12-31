@@ -32,32 +32,43 @@ namespace SeatAssignment.BusinessLogic
             {
                 var firstEmptyRow = _seats.First(x => !x.TrueForAll(y => y == true));
                 var rowIndex = _seats.IndexOf(firstEmptyRow);
-                var columnIndex = _seats[rowIndex].FindIndex(x => x == false);
-                results.Add(AssignSeats(rowIndex, columnIndex, request));
+                results.Add(AssignSeats(rowIndex, request));
             }
-            return results; 
+            return results;
         }
 
-        protected ReservationAssignment AssignSeats(int row, int column, ReservationRequest request)
+        protected ReservationAssignment AssignSeats(int rowIndex, ReservationRequest request)
         {
-            var result = new ReservationAssignment() { RequestId = request.RequestId, AssignedSeats = new List<string>() };
-
-            var assignedSeats = 0;
-            while (request.NumberOfSeats - assignedSeats != 0)
+            try
             {
-                var i = column;
-                while (i < ConfigurationReader.SeatsInEachRow && assignedSeats < request.NumberOfSeats)
+                var result = new ReservationAssignment() { RequestId = request.RequestId, AssignedSeats = new List<string>() };
+                var assignedSeats = 0;
+                while (request.NumberOfSeats - assignedSeats != 0)
                 {
-                    _seats[row][i] = true;
-                    result.AssignedSeats.Add(string.Format("{0}{1}", _alphabetArray[row], i + 1));
-                    i++;
-                    assignedSeats++;
+                    var i = _seats[rowIndex].FindIndex(x => x == false);
+                    if (i < 0)
+                    {
+                        //Corner cases when the theatre is almost full
+                        var emptyRow = _seats.First(x => !x.TrueForAll(y => y == true));
+                        rowIndex = _seats.IndexOf(emptyRow);
+                        i = _seats[rowIndex].FindIndex(x => x == false);
+                    }
+                    while (i < ConfigurationReader.SeatsInEachRow && assignedSeats < request.NumberOfSeats)
+                    {
+                        _seats[rowIndex][i] = true;
+                        result.AssignedSeats.Add(string.Format("{0}{1}", _alphabetArray[rowIndex], i + 1));
+                        i++;
+                        assignedSeats++;
+                    }
+                    rowIndex = (rowIndex + 1) % ConfigurationReader.NumberOfRows;
                 }
-                row++;
-                column = _seats[row].FindIndex(x => x == false);
+                request.IsAssigned = true;
+                return result;
             }
-            request.IsAssigned = true;
-            return result;
+            catch (Exception ex)
+            {
+                throw new Exception("Error Occured while assigning seats", ex);
+            }
         }
     }
 }

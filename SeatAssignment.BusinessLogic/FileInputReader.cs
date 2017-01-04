@@ -26,7 +26,7 @@ namespace SeatAssignment.BusinessLogic
             }
             catch (Exception ex)
             {
-                throw new Exception("Error Occured while reading from file", ex);
+                throw new Exception("Error occured while reading from file", ex);
             }
         }
 

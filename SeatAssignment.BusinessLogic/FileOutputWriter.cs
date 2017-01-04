@@ -16,7 +16,7 @@ namespace SeatAssignment.BusinessLogic
             FilePath = filePath;
         }
 
-        public void GenerateOutput(List<ReservationAssignment> assignments)
+        public bool GenerateOutput(List<ReservationAssignment> assignments)
         {
             try
             {
@@ -33,8 +33,9 @@ namespace SeatAssignment.BusinessLogic
             }
             catch(Exception ex)
             {
-                throw new Exception("Error Occured while writing to file", ex);
+                throw new Exception("Error occured while writing to file", ex);
             }
+            return true;
         }
     }
 }

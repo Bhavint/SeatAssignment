@@ -54,13 +54,22 @@ namespace SeatAssignment
                     outputFilePath = ConfigurationReader.DefaultOutputFilePath;
                 var outputWriter = container.Resolve<IOutputWriter>(new ResolverOverride[] { new ParameterOverride("filePath", outputFilePath) });
 
-                outputWriter.GenerateOutput(assignments);
+                if (outputWriter.GenerateOutput(assignments))
+                    Console.WriteLine(string.Format("Seat Assignment file has been saved at {0}", outputFilePath));
             }
             catch (Exception ex)
             {
                 //TODO: Handle Exceptions
-                Console.WriteLine("Aborting...");
-                return;
+                Console.WriteLine("Something went wrong");
+                Console.WriteLine(ex.Message);
+                if (ex.InnerException != null)
+                    Console.WriteLine(ex.InnerException.Message);
+                    Console.WriteLine("Aborting...");
+            }
+            finally
+            {
+                Console.WriteLine("Press any key to exit");
+                Console.ReadKey();
             }
         }
     }

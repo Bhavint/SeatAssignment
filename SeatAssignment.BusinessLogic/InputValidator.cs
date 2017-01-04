@@ -21,12 +21,15 @@ namespace SeatAssignment.BusinessLogic
                 result.Status = ValidationStatus.Failure;
                 result.Messages.Add(ValidationMessages.ExcessiveRequest);
             }
-
+            if (ContainsNegatives(requests))
+            {
+                result.Status = ValidationStatus.Failure;
+                result.Messages.Add(ValidationMessages.NegativeRequest);
+            }
             if (!result.Messages.Any())
             {
                 result.Status = ValidationStatus.Success;
             }
-
             return result;
         }
 
@@ -34,6 +37,11 @@ namespace SeatAssignment.BusinessLogic
         {
             var uniqueRequests = requests.DistinctBy(request => request.RequestId);
             return !(uniqueRequests.Count() == requests.Count());
+        }
+
+        private static bool ContainsNegatives(List<ReservationRequest> requests)
+        {
+            return requests.Any(request => request.NumberOfSeats < 0);
         }
 
         private static bool ContainsExcessiveRequests(List<ReservationRequest> requests)

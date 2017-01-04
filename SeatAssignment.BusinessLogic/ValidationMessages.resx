@@ -123,4 +123,7 @@
   <data name="ExcessiveRequest" xml:space="preserve">
     <value>Number of seats requested exceeds the theater capacity.</value>
   </data>
+  <data name="NegativeRequest" xml:space="preserve">
+    <value>Some reservation requests contain negative values.</value>
+  </data>
 </root>

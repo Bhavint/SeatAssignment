@@ -4,6 +4,6 @@ namespace SeatAssignment.Interfaces
 {
     public interface IOutputWriter
     {
-        void GenerateOutput(List<Entities.ReservationAssignment> assignments);
+        bool GenerateOutput(List<Entities.ReservationAssignment> assignments);
     }
 }

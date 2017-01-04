@@ -77,5 +77,14 @@ namespace SeatAssignment.BusinessLogic {
                 return ResourceManager.GetString("ExcessiveRequest", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some reservation requests contain negative values..
+        /// </summary>
+        internal static string NegativeRequest {
+            get {
+                return ResourceManager.GetString("NegativeRequest", resourceCulture);
+            }
+        }
     }
 }

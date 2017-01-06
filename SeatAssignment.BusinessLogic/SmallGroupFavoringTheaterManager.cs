@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 
 namespace SeatAssignment.BusinessLogic
 {
-    public class SmallGroupFavoringTheaterManager : FairTheaterManager, ITheaterManager
+    /// <summary>
+    /// Sorts reservation requests to assign contiguous seats to smaller groups on priority
+    /// </summary>
+    public class SmallGroupFavoringTheaterManager : FairTheaterManager
     {
         public SmallGroupFavoringTheaterManager() : base()
         { }

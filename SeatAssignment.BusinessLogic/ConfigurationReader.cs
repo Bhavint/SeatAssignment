@@ -3,6 +3,10 @@ using System.Configuration;
 
 namespace SeatAssignment.Entities
 {
+    /// <summary>
+    /// Reads and stores configuration from the config file. 
+    /// Prevents multiple visits to the config file every time it is requested
+    /// </summary>
     public static class ConfigurationReader
     {
         private static int _numberOfRows;

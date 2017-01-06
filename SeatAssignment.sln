@@ -13,6 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeatAssignment.Interfaces",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeatAssignment.BusinessLogic", "SeatAssignment.BusinessLogic\SeatAssignment.BusinessLogic.csproj", "{0CC9B856-7784-4E20-916A-56473C88B3F4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4C50C699-C151-490E-A005-3C9CE67A828A}"
+	ProjectSection(SolutionItems) = preProject
+		local.testsettings = local.testsettings
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

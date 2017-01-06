@@ -8,7 +8,10 @@ using SeatAssignment.Entities;
 
 namespace SeatAssignment.BusinessLogic
 {
-    public class LargeGroupFavoringTheaterManager : FairTheaterManager, ITheaterManager
+    /// <summary>
+    /// Sorts reservation requests to assign contiguous seats to larger groups on priority
+    /// </summary>
+    public class LargeGroupFavoringTheaterManager : FairTheaterManager
     {
         public LargeGroupFavoringTheaterManager() : base()
         { }

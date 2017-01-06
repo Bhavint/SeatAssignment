@@ -8,6 +8,11 @@ using SeatAssignment.Interfaces;
 
 namespace SeatAssignment.BusinessLogic
 {
+    /// <summary>
+    /// Ensures fairness in allotment of seats on a first come first serve basis.
+    /// Tries to allocate contiguous seats as much as possible leaving 
+    /// behind empty blocks of seats unless absolutely necessary to split a group.
+    /// </summary>
     public class FairTheaterManager : SimpleTheaterManager, ITheaterManager
     {
         public FairTheaterManager() : base()
@@ -18,41 +23,47 @@ namespace SeatAssignment.BusinessLogic
 
             foreach (var request in requests)
             {
+                //Select appropriate row to begin seat allocation for request
                 var emptyRow = GetEmptyRow(request.NumberOfSeats);
                 var rowIndex = _seats.IndexOf(emptyRow);
                 results.Add(AssignSeats(rowIndex, request));
             }
-            return results.OrderBy(result=>result.RequestId).ToList();
+            return results.OrderBy(result => result.RequestId).ToList();
         }
 
+        //This gives the fairness to the theater manager
         private List<bool> GetEmptyRow(int requestedNumberOfSeats)
         {
-            var vacancies = _seats.Select(x => x.Count(y => !y)).ToList();
+            //Get number of vacancies in each row
+            var vacancies = _seats.Select(row => row.Count(isOccupied => isOccupied == false)).ToList();
+
             var smallestContiguousBlock = int.MaxValue;
             var largestContiguousblock = int.MinValue;
-            var indexOfSmallestBlock = -1;
-            var indexOfLargestBlock = -1;
+            var rowIndexOfSmallestBlock = -1;
+            var rowIndexOfLargestBlock = -1;
+            //Select smallest and largest contiguous vacancies that can
+            //accomodate requested seats
             for (int i = 0; i < vacancies.Count; i++)
             {
                 var difference = vacancies[i] - requestedNumberOfSeats;
                 if (difference >= 0 && difference < smallestContiguousBlock)
                 {
                     smallestContiguousBlock = difference;
-                    indexOfSmallestBlock = i;
+                    rowIndexOfSmallestBlock = i;
                 }
                 if (vacancies[i] > largestContiguousblock)
                 {
                     largestContiguousblock = vacancies[i];
-                    indexOfLargestBlock = i;
+                    rowIndexOfLargestBlock = i;
                 }
             }
+            var emptyRow = _seats.First(row => !row.TrueForAll(isOccupied => isOccupied == true));
 
-            var emptyRow = _seats.First(x => !x.TrueForAll(y => y == true));
-
-            if (indexOfSmallestBlock != -1)
-                emptyRow = _seats[indexOfSmallestBlock];
-            else if (indexOfLargestBlock != -1)
-                emptyRow = _seats[indexOfLargestBlock];
+            if (rowIndexOfSmallestBlock != -1)
+                emptyRow = _seats[rowIndexOfSmallestBlock];
+            
+            else if (rowIndexOfLargestBlock != -1)
+                emptyRow = _seats[rowIndexOfLargestBlock];
 
             return emptyRow;
         }

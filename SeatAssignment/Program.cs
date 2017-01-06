@@ -13,13 +13,10 @@ namespace SeatAssignment
         {
             try
             {
-                /*
-                 * 1. Read Input
-                 * 2. Assign Seats
-                 * 3. Return Results
-                */
+                //Dependency Injection Container
                 var container = new UnityContainer().LoadConfiguration();
 
+                //Determine input file path from arguments or pick default from configuration
                 string inputFilePath;
                 if (args.Length >= 2 && !string.IsNullOrEmpty(args[1]))
                 {
@@ -29,6 +26,7 @@ namespace SeatAssignment
                     inputFilePath = ConfigurationReader.DefaultInputFilePath;
                 var inputReader = container.Resolve<IInputReader>(new ResolverOverride[] { new ParameterOverride("filePath", inputFilePath) });
 
+                //Read requests from file
                 var reservationRequests = inputReader.GetTicketRequests();
 
                 var validationResult = InputValidator.Validate(reservationRequests);
@@ -43,8 +41,14 @@ namespace SeatAssignment
                     return;
                 }
 
+                //Create Appropriate theater Manager from the several options available.
+                //Which one to pick is mentioned in configuration file.
                 var theaterManager = container.Resolve<ITheaterManager>();
+
+                //assign seats
                 var assignments = theaterManager.AssignSeats(reservationRequests);
+
+                //create output file
                 string outputFilePath;
                 if (args.Length >= 3 && !string.IsNullOrEmpty(args[2]))
                 {

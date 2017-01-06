@@ -8,9 +8,13 @@ using System.Threading.Tasks;
 
 namespace SeatAssignment.BusinessLogic
 {
+    /// <summary>
+    /// Ensures perfect utilization of the available seats.
+    /// Assigns seats strictly serially even if a group of people is split acrross multiple rows
+    /// </summary>
     public class SimpleTheaterManager : ITheaterManager
     {
-        protected static string[] _alphabetArray = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
+        protected static string[] _rowNameArray = new string[ConfigurationReader.NumberOfRows];
 
         protected List<List<bool>> _seats;
 
@@ -21,7 +25,19 @@ namespace SeatAssignment.BusinessLogic
             {
                 var row = new List<bool>(new bool[ConfigurationReader.SeatsInEachRow]);
                 _seats.Add(row);
+                _rowNameArray[i] = GetColumnNameFromIndex(i);
             }
+        }
+
+        private static string GetColumnNameFromIndex(int column)
+        {
+            var col = Convert.ToString((char)('A' + (column % 26)));
+            while (column >= 26)
+            {
+                column = (column / 26) - 1;
+                col = Convert.ToString((char)('A' + (column % 26))) + col;
+            }
+            return col;
         }
 
         public virtual List<ReservationAssignment> AssignSeats(List<ReservationRequest> requests)
@@ -30,7 +46,7 @@ namespace SeatAssignment.BusinessLogic
 
             foreach (var request in requests)
             {
-                var firstEmptyRow = _seats.First(x => !x.TrueForAll(y => y == true));
+                var firstEmptyRow = _seats.First(row => !row.TrueForAll(isOccupied => isOccupied == true));
                 var rowIndex = _seats.IndexOf(firstEmptyRow);
                 results.Add(AssignSeats(rowIndex, request));
             }
@@ -45,21 +61,23 @@ namespace SeatAssignment.BusinessLogic
                 var assignedSeats = 0;
                 while (request.NumberOfSeats - assignedSeats != 0)
                 {
-                    var i = _seats[rowIndex].FindIndex(x => x == false);
+                    var i = _seats[rowIndex].FindIndex(isOccupied => isOccupied == false);
                     if (i < 0)
                     {
-                        //Corner cases when the theatre is almost full
-                        var emptyRow = _seats.First(x => !x.TrueForAll(y => y == true));
+                        //When the next row is full but tickets 
+                        //for this request are not yet reserved
+                        var emptyRow = _seats.First(row => !row.TrueForAll(isOccupied => isOccupied == true));
                         rowIndex = _seats.IndexOf(emptyRow);
-                        i = _seats[rowIndex].FindIndex(x => x == false);
+                        i = _seats[rowIndex].FindIndex(isOccupied => isOccupied == false);
                     }
                     while (i < ConfigurationReader.SeatsInEachRow && assignedSeats < request.NumberOfSeats)
                     {
                         _seats[rowIndex][i] = true;
-                        result.AssignedSeats.Add(string.Format("{0}{1}", _alphabetArray[rowIndex], i + 1));
+                        result.AssignedSeats.Add(string.Format("{0}{1}", _rowNameArray[rowIndex], i + 1));
                         i++;
                         assignedSeats++;
                     }
+                    //Circularly move to next row
                     rowIndex = (rowIndex + 1) % ConfigurationReader.NumberOfRows;
                 }
                 request.IsAssigned = true;

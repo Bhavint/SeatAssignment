@@ -1,4 +1,5 @@
-﻿using SeatAssignment.Entities;
+﻿using Microsoft.Practices.Unity;
+using SeatAssignment.Entities;
 using SeatAssignment.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -11,15 +12,15 @@ namespace SeatAssignment.BusinessLogic
     /// <summary>
     /// Sorts reservation requests to assign contiguous seats to smaller groups on priority
     /// </summary>
-    public class SmallGroupFavoringTheaterManager : FairTheaterManager
+    public class SmallGroupFavoringTheaterManager : ITheaterManager
     {
-        public SmallGroupFavoringTheaterManager() : base()
-        { }
+        [Dependency("internalTheaterManager")]
+        protected ITheaterManager _internalTheaterManager { get; set; }
 
-        public override List<ReservationAssignment> AssignSeats(List<ReservationRequest> requests)
+        public  List<ReservationAssignment> AssignSeats(List<ReservationRequest> requests)
         {
             var sortedRequests = requests.OrderBy(request => request.NumberOfSeats).ToList();
-            return base.AssignSeats(sortedRequests);
+            return _internalTheaterManager.AssignSeats(sortedRequests);
         }
     }
 }

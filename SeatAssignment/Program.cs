@@ -43,7 +43,7 @@ namespace SeatAssignment
 
                 //Create Appropriate theater Manager from the several options available.
                 //Which one to pick is mentioned in configuration file.
-                var theaterManager = container.Resolve<ITheaterManager>();
+                var theaterManager = container.Resolve<ITheaterManager>("mainTheaterManager");
 
                 //assign seats
                 var assignments = theaterManager.AssignSeats(reservationRequests);

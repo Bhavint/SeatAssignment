@@ -19,8 +19,11 @@ namespace SeatAssignment.Entities
                     return _numberOfRows;
                 else
                 {
-                    var appSetting = ConfigurationManager.AppSettings["NumberofRows"];
-                    _numberOfRows = Convert.ToInt32(appSetting);
+                    var appSetting = ConfigurationManager.AppSettings["NumberOfRows"];
+                    var value = Convert.ToInt32(appSetting);
+                    if (value <= 0)
+                        throw new ArgumentOutOfRangeException("NumberOfRows", "Value must be positive");
+                    _numberOfRows = value;
                     return _numberOfRows;
                 }
             }
@@ -37,7 +40,10 @@ namespace SeatAssignment.Entities
                 else
                 {
                     var appSetting = ConfigurationManager.AppSettings["SeatsInEachRow"];
-                    _seatsInEachRow = Convert.ToInt32(appSetting);
+                    var value = Convert.ToInt32(appSetting);
+                    if (value <= 0)
+                        throw new ArgumentOutOfRangeException("SeatsInEachRow", "Value must be positive");
+                    _seatsInEachRow = value;
                     return _seatsInEachRow;
                 }
             }

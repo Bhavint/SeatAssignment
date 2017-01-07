@@ -18,9 +18,14 @@ namespace SeatAssignment.BusinessLogic
 
         protected List<List<bool>> _seats;
 
+        private int _totalSeatsAssigned;
+        private int _totalCapacity;
+
         public SimpleTheaterManager()
         {
             _seats = new List<List<bool>>();
+            _totalSeatsAssigned = 0;
+            _totalCapacity = ConfigurationReader.NumberOfRows * ConfigurationReader.SeatsInEachRow;
             for (int i = 0; i < ConfigurationReader.NumberOfRows; i++)
             {
                 var row = new List<bool>(new bool[ConfigurationReader.SeatsInEachRow]);
@@ -46,9 +51,12 @@ namespace SeatAssignment.BusinessLogic
 
             foreach (var request in requests)
             {
-                var firstEmptyRow = _seats.First(row => !row.TrueForAll(isOccupied => isOccupied == true));
-                var rowIndex = _seats.IndexOf(firstEmptyRow);
-                results.Add(AssignSeats(rowIndex, request));
+                lock (_seats)
+                {
+                    var firstEmptyRow = _seats.First(row => !row.TrueForAll(isOccupied => isOccupied == true));
+                    var rowIndex = _seats.IndexOf(firstEmptyRow);
+                    results.Add(AssignSeats(rowIndex, request));
+                }
             }
             return results;
         }
@@ -72,7 +80,10 @@ namespace SeatAssignment.BusinessLogic
                     }
                     while (i < ConfigurationReader.SeatsInEachRow && assignedSeats < request.NumberOfSeats)
                     {
+                        if (_totalSeatsAssigned >= _totalCapacity)
+                            throw new OverflowException("Theater Capacity Exceeded");
                         _seats[rowIndex][i] = true;
+                        _totalSeatsAssigned++;
                         result.AssignedSeats.Add(string.Format("{0}{1}", _rowNameArray[rowIndex], i + 1));
                         i++;
                         assignedSeats++;

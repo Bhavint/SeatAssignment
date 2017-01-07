@@ -24,9 +24,12 @@ namespace SeatAssignment.BusinessLogic
             foreach (var request in requests)
             {
                 //Select appropriate row to begin seat allocation for request
-                var emptyRow = GetEmptyRow(request.NumberOfSeats);
-                var rowIndex = _seats.IndexOf(emptyRow);
-                results.Add(AssignSeats(rowIndex, request));
+                lock (_seats)
+                {
+                    var emptyRow = GetEmptyRow(request.NumberOfSeats);
+                    var rowIndex = _seats.IndexOf(emptyRow);
+                    results.Add(AssignSeats(rowIndex, request));
+                }
             }
             return results.OrderBy(result => result.RequestId).ToList();
         }

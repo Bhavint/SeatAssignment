@@ -13,7 +13,7 @@ namespace SeatAssignment
         {
             try
             {
-                //Dependency Injection Container
+                //Inversion of Control Container
                 var container = new UnityContainer().LoadConfiguration();
 
                 //Determine input file path from arguments or pick default from configuration

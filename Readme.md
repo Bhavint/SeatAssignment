@@ -2,6 +2,18 @@
 
 The application takes in reservation requests and assigns seats in a theater with predefines number of rows and a fixed number of seats in each row. The assignment is done offline. Several types of assignment algorithms and input output methods can be pre-configured to achieve different ditribution of assignments. Presently, it supports reading from a text file and writing to a text file. More on this in the configuration section.
 
+# Assumptions
+
+* The theater capacity is variable.
+* The format for reservation request and seat assignment is clearly defined and the system does not attempt to curate input.
+* Maximizing theater utilization implies that as many seats as possible should be assigned.
+* Maximizing customer satisfaction implies:
+  * All seat assignments to a single request must be contiguous i.e in the same row.
+  * Requests should be processed in their order of arrival. (However this is a business decision. Accordingly the system provides for limited high level flexibility.)
+* Theater utilization takes higher priority than customer satisfaction. The system will ensure contiguous assignment as far as possible but does not guarantee it.
+* This is not supposed to be a distributed/multithreaded application. However, it can be extended with modifications.
+* This is primarily ment for windows based systems. However, it can be modified to make it platform agnostic.
+
 ## Getting Started
 
 You will need a variant of Microsoft Visual Studio 2013 or higher to develop, debug and write tests. 
@@ -16,6 +28,24 @@ Download nuget(v3.4.4) from https://dist.nuget.org/index.html.
 ### Installing Development Environment
 
 To setup a development environment, download Microsoft Visual Studio Community edition along with .NET 4.5.2 from https://www.visualstudio.com/free-developer-offers/ and follow the steps
+
+## Configuration
+
+### App Settings
+App settings define certain parameters necessary to constraint the size of the input.
+* NumberOfRows : Defines the number of rows in the theater
+* SeatsInEachRow : Defines the number of seats in each row
+* DefaultInputFilePath : Filepath to read input from in case no file path is given as a parameter
+* DefaultOutputFilePath : Filepath to write output to case no file path is given as a parameter
+
+### Ioc Container Configuration
+This lets you pick between various implementations with different rules of assigning seats. For detailed explanation about the configuration schema, visit https://msdn.microsoft.com/en-us/library/dn507421(v=pandp.30).aspx 
+The interesting bits lie in configuring various implementations of ITheaterManager. Replace the "mapTo" value in the       
+<register type="ITheaterManager" mapTo="FairTheaterManager" name="mainTheaterManager">
+
+* Simple Theater Manager: Assigns seats to reservation requests row wise in the sequence of their arrival starting from top left corner.
+* Fair Theater Manager: Assigns all seats to reservation requests in the sequence of their arrival in the same row as far as possible while minimizing vacancies in each row.
+* Other implementations decorate Simple/Fair Managers by prioritizing larger/smaller reservation requests.
 
 ## Building From Command Line
 Step 1: Download Dependencies
@@ -45,24 +75,22 @@ Use MSTest.exe to run tests. Find the MSTest.exe file from your Visual Studio In
 G:\Projects\MSTest.exe /testcontainer:SeatAssignment.Tests/bin/debug/SeatAssignment.Tests.dll /testsettings:local.testsettings
 ```
 
-## Configuration
+## Running from Command Line
+```
+<drive letter>:\Path\To\Executable\MyExecutable.exe [Path\To\Input\File\MyInputFile.txt] [Path\To\OutputFile\MyOutputFile.txt]
+```
 
-### App Settings
-App settings define certain parameters necessary to constraint the size of the input.
-* NumberOfRows : Defines the number of rows in the theater
-* SeatsInEachRow : Defines the number of seats in each row
-* DefaultInputFilePath : Filepath to read input from in case no file path is given as a parameter
-* DefaultOutputFilePath : Filepath to write output to case no file path is given as a parameter
+e.g.
 
-### Ioc Container Configuration
-This lets you pick between various implementations with different rules of assigning seats. For detailed explanation about the configuration schema, visit https://msdn.microsoft.com/en-us/library/dn507421(v=pandp.30).aspx 
-The interesting bits lie in configuring various implementations of ITheaterManager. Replace the "mapTo" value in the       
+```
+C:\> G:\Projects\SeatAssignment\SeatAssignment\bin\Debug\SeatAssignment.exe G:\Projects\sample-input G:\Projects\sample-output.txt
+```
+or simply 
+```
+C:\> G:\Projects\SeatAssignment\SeatAssignment\bin\Debug\SeatAssignment.exe
+```
 
-<register type="ITheaterManager" mapTo="FairTheaterManager" name="mainTheaterManager">
-
-* Simple Theater Manager: Assigns seats to reservation requests row wise in the sequence of their arrival starting from top left corner.
-* Fair Theater Manager: Assigns all seats to reservation requests in the sequence of their arrival in the same row as far as possible while minimizing vacancies in each row.
-* Other implementations decorate Simple/Fair Managers by prioritizing larger/smaller reservation requests.
+if you want to assign default file paths through the App Settings.
 
 ## Built With
 

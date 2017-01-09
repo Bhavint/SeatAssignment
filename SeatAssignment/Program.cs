@@ -18,9 +18,9 @@ namespace SeatAssignment
 
                 //Determine input file path from arguments or pick default from configuration
                 string inputFilePath;
-                if (args.Length >= 2 && !string.IsNullOrEmpty(args[1]))
+                if (args.Length >= 1 && !string.IsNullOrEmpty(args[0]))
                 {
-                    inputFilePath = args[1];
+                    inputFilePath = args[0];
                 }
                 else
                     inputFilePath = ConfigurationReader.DefaultInputFilePath;
@@ -50,9 +50,9 @@ namespace SeatAssignment
 
                 //create output file
                 string outputFilePath;
-                if (args.Length >= 3 && !string.IsNullOrEmpty(args[2]))
+                if (args.Length >= 2 && !string.IsNullOrEmpty(args[1]))
                 {
-                    outputFilePath = args[2];
+                    outputFilePath = args[1];
                 }
                 else
                     outputFilePath = ConfigurationReader.DefaultOutputFilePath;

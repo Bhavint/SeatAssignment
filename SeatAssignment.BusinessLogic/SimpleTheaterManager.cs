@@ -14,35 +14,40 @@ namespace SeatAssignment.BusinessLogic
     /// </summary>
     public class SimpleTheaterManager : ITheaterManager
     {
-        protected static string[] _rowNameArray = new string[ConfigurationReader.NumberOfRows];
-
-        protected List<List<bool>> _seats;
+        protected static string[] _rowNameArray;
 
         private int _totalSeatsAssigned;
         private int _totalCapacity;
 
+        //Maintain only vacancies in each row. 
+        //Reduces space complexity to O(NumberOfRows)
+        //Better than maintaining 2D array of O(NumberOfRows*SeatsInEachRow)
+        protected int[] _vacancies;
+
         public SimpleTheaterManager()
         {
-            _seats = new List<List<bool>>();
+            _rowNameArray = new string[ConfigurationReader.NumberOfRows];
+            _vacancies = new int[ConfigurationReader.NumberOfRows];
             _totalSeatsAssigned = 0;
             _totalCapacity = ConfigurationReader.NumberOfRows * ConfigurationReader.SeatsInEachRow;
+
             for (int i = 0; i < ConfigurationReader.NumberOfRows; i++)
             {
                 var row = new List<bool>(new bool[ConfigurationReader.SeatsInEachRow]);
-                _seats.Add(row);
                 _rowNameArray[i] = GetColumnNameFromIndex(i);
+                _vacancies[i] = ConfigurationReader.SeatsInEachRow;
             }
         }
 
-        private static string GetColumnNameFromIndex(int column)
+        private static string GetColumnNameFromIndex(int index)
         {
-            var col = Convert.ToString((char)('A' + (column % 26)));
-            while (column >= 26)
+            var columnName = Convert.ToString((char)('A' + (index % 26)));
+            while (index >= 26)
             {
-                column = (column / 26) - 1;
-                col = Convert.ToString((char)('A' + (column % 26))) + col;
+                index = (index / 26) - 1;
+                columnName = Convert.ToString((char)('A' + (index % 26))) + columnName;
             }
-            return col;
+            return columnName;
         }
 
         public virtual List<ReservationAssignment> AssignSeats(List<ReservationRequest> requests)
@@ -51,10 +56,16 @@ namespace SeatAssignment.BusinessLogic
 
             foreach (var request in requests)
             {
-                lock (_seats)
+                lock (_vacancies)
                 {
-                    var firstEmptyRow = _seats.First(row => !row.TrueForAll(isOccupied => isOccupied == true));
-                    var rowIndex = _seats.IndexOf(firstEmptyRow);
+                    var rowIndex = -1;
+                    for (int i = 0; i < _vacancies.Count(); i++)
+                    {
+                        if (_vacancies[i] > 0)
+                        {
+                            rowIndex = i;
+                        }
+                    }
                     results.Add(AssignSeats(rowIndex, request));
                 }
             }
@@ -69,23 +80,28 @@ namespace SeatAssignment.BusinessLogic
                 var assignedSeats = 0;
                 while (request.NumberOfSeats - assignedSeats != 0)
                 {
-                    var i = _seats[rowIndex].FindIndex(isOccupied => isOccupied == false);
-                    if (i < 0)
+                    //Since we are filling left to right, column index can be calculated from the vacancy
+                    var columnIndex = ConfigurationReader.SeatsInEachRow - _vacancies[rowIndex];
+                    var j = 0;
+                    while (columnIndex < 0)
                     {
                         //When the next row is full but tickets 
                         //for this request are not yet reserved
-                        var emptyRow = _seats.First(row => !row.TrueForAll(isOccupied => isOccupied == true));
-                        rowIndex = _seats.IndexOf(emptyRow);
-                        i = _seats[rowIndex].FindIndex(isOccupied => isOccupied == false);
+                        if (_vacancies[j] > 0)
+                        {
+                            rowIndex = j;
+                            columnIndex = ConfigurationReader.SeatsInEachRow - _vacancies[rowIndex];
+                        }
+                        j++;
                     }
-                    while (i < ConfigurationReader.SeatsInEachRow && assignedSeats < request.NumberOfSeats)
+                    while (columnIndex < ConfigurationReader.SeatsInEachRow && assignedSeats < request.NumberOfSeats)
                     {
                         if (_totalSeatsAssigned >= _totalCapacity)
                             throw new OverflowException("Theater Capacity Exceeded");
-                        _seats[rowIndex][i] = true;
+                        _vacancies[rowIndex]--;
                         _totalSeatsAssigned++;
-                        result.AssignedSeats.Add(string.Format("{0}{1}", _rowNameArray[rowIndex], i + 1));
-                        i++;
+                        result.AssignedSeats.Add(string.Format("{0}{1}", _rowNameArray[rowIndex], columnIndex + 1));
+                        columnIndex++;
                         assignedSeats++;
                     }
                     //Circularly move to next row

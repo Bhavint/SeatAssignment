@@ -58,6 +58,8 @@ namespace SeatAssignment.Entities
                 if (string.IsNullOrEmpty(_defaultInputFilePath))
                 {
                     _defaultInputFilePath = ConfigurationManager.AppSettings["DefaultInputFilePath"];
+                    if (string.IsNullOrWhiteSpace(_defaultInputFilePath))
+                        return string.Empty;
                     return _defaultInputFilePath;
                 }
                 else
@@ -76,6 +78,8 @@ namespace SeatAssignment.Entities
                 if (string.IsNullOrEmpty(_defaultOutputFilePath))
                 {
                     _defaultOutputFilePath = ConfigurationManager.AppSettings["DefaultOutputFilePath"];
+                    if (string.IsNullOrWhiteSpace(_defaultOutputFilePath))
+                        return string.Empty;
                     return _defaultOutputFilePath;
                 }
                 else

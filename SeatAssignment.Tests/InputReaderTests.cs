@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using SeatAssignment.Interfaces;
+using SeatAssignment.Entities;
 
 namespace SeatAssignment.Tests
 {
@@ -66,6 +67,14 @@ namespace SeatAssignment.Tests
             var filePath = "InputFiles\\IncorrectInput.txt";
             var inputReader = container.Resolve<IInputReader>(new ResolverOverride[] { new ParameterOverride("filePath", filePath) });
             var requests = inputReader.GetTicketRequests();
+        }
+
+        [TestMethod]
+        public void TestConfiguration()
+        {
+            Assert.IsNotNull(ConfigurationReader.DefaultInputFilePath);
+            Assert.IsNotNull(ConfigurationReader.DefaultOutputFilePath);
+
         }
     }
 }

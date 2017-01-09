@@ -13,7 +13,7 @@ namespace SeatAssignment.BusinessLogic
     /// Tries to allocate contiguous seats as much as possible leaving 
     /// behind empty blocks of seats unless absolutely necessary to split a group.
     /// </summary>
-    public class FairTheaterManager : SimpleTheaterManager, ITheaterManager
+    public class FairTheaterManager : SimpleTheaterManager
     {
         public FairTheaterManager() : base()
         { }
